@@ -1,0 +1,75 @@
+<!doctype>
+
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Space Dash - Endless Runner</title>
+    <link rel="stylesheet" href="css/styles.css">
+
+</head>
+
+<body>
+    <div id="container"></div>
+    <div id="leftScreen"></div><div id="rightScreen"></div>
+    <div id="info">Use <em>A</em> and <em>D</em> keys to move spaceship left and right.<br>Use mouse drag and wheel to pan and zoom.<br>Press ESC to Pause/Unpause.<br>Double-click to recenter camera.</div>
+    <div id="splash-screen">
+        <div id="splash-container">
+            <img id="titleLogo" src="images/titleLogo.png"></img>
+            <img id="playIcon" src="images/playIcon.png"></img>
+        </div>
+    </div>
+    <div id="score-overlay" class="score">0</div>
+    <div id="lives-overlay">
+        <img class="lives" src="images/livesIcon.png"></img>
+        <img class="lives" src="images/livesIcon.png"></img>
+        <img class="lives" src="images/livesIcon.png"></img>
+    </div>
+    <div id="pause-screen">
+        <img id="titleLogo" src="images/titleLogo.png"></img>
+        <h1>Paused</h1>
+        <h3>Press ESC to unpause</h3>
+    </div>
+    <div id="settingsIconContainer">
+        <img id="settingsIcon" class="settings" src="images/settingsIcon.png"></img>
+    </div>
+
+    <div id="settings-overlay">
+        <ul>
+            <li>First Person Mode</li>
+            <li><label class="switch">
+                <input id="firstPersonbox" type="checkbox">
+                <span class="slider round"></span>
+            </label></li>
+        </ul>
+    </div>
+
+    <div id="gameover-overlay">
+        <img id="gameOverLogo" src="images/gameOver.png"></img>
+        <div id="gameOverScore" class="score"></div>
+        <div id="high-scores-container">
+            <!-- <h1>Leaderboards</h1> -->
+            <div id="high-scores"></div>
+        </div>
+        <img id="replayIcon" class="hover-shadow" src="images/replayIcon.png"></img>
+    </div>
+    <div id="nameModal">
+        <div class="modal-content">
+            <input type="text" id="highScoreName" class="nameInput" placeholder="Enter Name for Highscore" maxlength="20"/><br/>
+            <button id="submitName" class="nameButton">Submit</button>
+        </div>
+    </div>
+
+
+    <script src="js/three.js"></script>
+    <script src="js/OrbitControls.js"></script>
+    <script src="js/dat.gui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.1/TweenMax.min.js"></script>
+    <script src="js/MTLLoader.js"></script>
+    <script src="js/OBJLoader.js"></script>
+    <script src="js/ColladaLoader.js"></script>
+
+    <script src="js/myjs.js"></script>
+</body>
+
+</html>

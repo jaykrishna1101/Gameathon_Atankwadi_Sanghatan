@@ -1,0 +1,534 @@
+/* TODO: Rewrite CSS for responsive layouts */
+
+@font-face {
+    font-family: Turtles;
+    src: url("fonts/turtles.ttf");
+}
+
+html {
+    overflow: hidden;
+}
+
+body {
+    position: relative;
+    margin: 0;
+    canvas {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.githubButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 150px;
+    height: 30px;
+    background: #e7e7e7;
+    border-radius: 15px;
+}
+
+#info {
+    position: fixed;
+    top: 10px;
+    max-width: 350px;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.1);
+    color: white;
+    z-index: 2;
+}
+
+#progress {
+    position: fixed;
+    left: calc(50% - 100px);
+    top: 40%;
+    width: 200px;
+    height: 20px;
+    background: #000;
+    border: 2px solid #000;
+    color: white;
+}
+
+#progress::after {
+    content: "Loading Awesome Textures and Models...";
+    position: absolute;
+    bottom: -30px;
+    left: -25%;
+    width: 150%;
+    text-align: center;
+}
+
+#progressBar {
+    width: 200px;
+    height: 20px;
+    background: green;
+    border: none;
+}
+
+#gameover-overlay {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    visibility: hidden;
+}
+
+#nameModal {
+    display: none;
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.2);
+}
+
+.nameButton {
+    position: relative;
+    margin: 20px 0;
+    width: 150px;
+    height: 30px;
+    background: #e7e7e7;
+    border-radius: 15px;
+}
+
+.nameInput {
+    font-family: Turtles, Arial, sans-serif;
+    font-size: 30px;
+    line-height: 1;
+    font-weight: 500;
+    border: none;
+    border-bottom: 1px solid white;
+    background: transparent;
+    height: 30px;
+    width: 80%;
+    color: white;
+    text-align: center;
+    margin: 10px 0;
+}
+
+.nameInput:focus {
+    outline: none;
+}
+
+.modal-content {
+    position: relative;
+    top: 32vh;
+    background: rgba(0,0,0,0.8);
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50vh;
+    color: white;
+    z-index: 1;
+    text-align: center;
+}
+
+#score-overlay {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 2;
+}
+
+#high-scores-container {
+    position: relative;
+    width: 50%;
+    background: rgba(0, 0, 0, 0.5);;
+    color: white;
+    margin: 0 auto;
+    top: 16vh;
+    max-height: 45vh;
+    padding: 10px 0 20px 0;
+    overflow-y: auto;
+}
+
+
+
+#high-scores {
+    position: relative;
+    margin: 2vw;
+}
+
+#high-scores ol {
+    color: white;
+}
+
+#high-scores li {
+    display: list-item;
+    margin: 10px auto;
+    font-family: Turtles, Arial, sans-serif;
+    font-size: 30px;
+}
+
+.score {
+    font-family: Turtles, Arial, sans-serif;
+    font-size: 50px;
+    color: #9F2B2B;
+    line-height: 50px;
+    -webkit-text-stroke: 0.5px black;
+    text-shadow: 0 3px 8px black;
+}
+
+#lives-overlay {
+    position: absolute;
+    top: 80px;
+    left: 20px;
+    z-index: 2;
+}
+
+#pause-screen {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    visibility: hidden;
+    text-align: center;
+}
+
+#pause-screen h1, #pause-screen h3 {
+    position: relative;
+    top: 65vh;
+    color: white;
+}
+
+#pause-screen h1 {
+    font-family: Turtles, Arial, sans-serif;
+}
+
+#splash-screen {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+#splash-container {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1.5s ease-in;
+}
+
+img {
+    display: block;
+}
+
+.lives {
+    display: inline-block;
+    width: 4vh;
+}
+
+#titleLogo, #gameOverLogo {
+    position: relative;
+    width: 50vh;
+    top: 15vh;
+    margin: 0 auto;
+}
+
+#gameOverLogo {
+    top: 12vh;
+}
+#playIcon, #replayIcon {
+    position: relative;
+    width: 10vh;
+    top: 60vh;
+    margin: 0 auto;
+    padding-left: 2vh;
+}
+
+#replayIcon {
+    top: 20%;
+}
+
+#restart-game {
+    position: absolute;
+    bottom: 20%;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+}
+
+#gameOverScore {
+    position: relative;
+    top: 13vh;
+    text-align: center;
+}
+
+#settingsIconContainer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 3;
+    visibility: hidden;
+}
+
+#settingsIcon {
+    position: relative;
+}
+
+.settings {
+    width: 50px;
+}
+
+.hs-score {
+    position: absolute;
+    right: 0;
+}
+
+#settings-overlay {
+    position: absolute;
+    top: 35%;
+    width: 80%;
+    max-width: 800px;
+    height: 30%;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    visibility: hidden;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2;
+    text-align: center;
+}
+
+.hover-shadow {
+    transition: transform 0.3s;
+    transform: translateZ(0);
+    box-shadow: 0 0 1px transparent;
+}
+
+.hover-shadow:hover {
+    transform: translateY(-15px);
+    animation-name: hover;
+    animation-duration: 1.5s;
+    animation-delay: 0.3s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+.hover-shadow:before {
+    pointer-events: none;
+    position: absolute;
+    z-index: -1;
+    content: '';
+    top: 100%;
+    left: 5%;
+    height: 10px;
+    width: 90%;
+    opacity: 0;
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0) 80%);
+    transition-duration: 0.3s;
+}
+
+.hover-shadow:hover:before {
+    opacity: .4;
+    transform: translateY(15px);
+    animation-name: hover-shadow;
+    animation-duration: 1.5s;
+    animation-delay: .3s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+@keyframes hover {
+    50% {
+        transform: translateY(-8px);
+    }
+    100% {
+        transform: translateY(-15px);
+    }
+}
+
+/* Switch styles */
+
+/* The switch - the box around the slider */
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+/* Hide default HTML checkbox */
+
+.switch input {
+    display: none;
+}
+
+/* The slider */
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: transform .4s;
+    transition: transform .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: transform .4s;
+    transition: transform .4s;
+}
+
+input:checked+.slider {
+    background-color: #9F2B2B;
+}
+
+input:focus+.slider {
+    box-shadow: 0 0 1px #9F2B2B;
+}
+
+input:checked+.slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+/* Rounded sliders */
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* List style */
+
+ul {
+    display: inline-block;
+    list-style-type: none;
+    overflow: hidden;
+    text-align: center;
+    color: white;
+    font-size: 40px;
+    line-height: 1;
+}
+
+ul li {
+    float: left;
+    margin: 0 20px;
+}
+
+#leftScreen, #rightScreen {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background: transparent;
+}
+#rightScreen {
+    right: 0;
+}
+
+@media only screen and (max-width: 760px) {
+    #info {
+        display: none;
+    }
+    #high-scores-container {
+        width: 90%;
+    }
+    #titleLogo, #gameOverLogo {
+            width: 80vw;
+    }
+    #titleLogo {
+        top: 20vh;
+    }
+    #lives-overlay {
+        top: 30px;
+        left: 20px;
+        z-index: 2;
+    }
+
+
+    .modal-content {
+        width: 80vw;
+    }
+    .nameInput {
+        font-size: 20px;
+        width: 100%;
+    }
+    #high-scores li {
+        font-size: 20px;
+    }
+    .githubButton {
+        width: 100px;
+    }
+    .nameButton {
+        width: 100px;
+    }
+
+    #settings-overlay {
+        width: 90vw;
+    }
+
+    #settings-overlay ul {
+        padding: 0;
+        font-size: 25px;
+    }
+
+    .switch {
+        height: 26px;
+    }
+
+    .slider {
+
+    }
+
+    .slider:before {
+        height: 20px;
+        width: 20px;
+        bottom: 3px;
+    }
+
+    input:checked+.slider:before {
+        -webkit-transform: translateX(30px);
+        -ms-transform: translateX(30px);
+        transform: translateX(30px);
+    }
+
+    #score-overlay {
+        left: unset;
+        right: 20px;
+    }
+
+    .score {
+        font-size: 40px;
+        line-height: 40px;
+    }
+
+    #settingsIconContainer {
+        top: unset;
+        right: unset;
+        bottom: 20px;
+        left: 20px;
+        visibility: visible;
+    }
+}
