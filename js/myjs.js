@@ -43,7 +43,52 @@ var scoreContainer, livesContainer, pauseContainer, settingsIconContainer, setti
 
 // Clock
 // var clock = new THREE.Clock();
+// New global variable for the obstacle model
+// Variable to store the loaded spaceship model
+// Global variable
+var obstacleModel = null;
 
+function loadObstacle() {
+    // Check if GLTFLoader is actually available
+    if (typeof THREE.GLTFLoader === 'undefined') {
+        console.error("CRITICAL ERROR: THREE.GLTFLoader is missing! You need to add the script to your HTML.");
+        return;
+    }
+
+    var loader = new THREE.GLTFLoader();
+
+    console.log("Attempting to load: assets/spaceship.glb");
+
+    loader.load(
+        // Resource URL
+        'assets/spaceship.glb', 
+        
+        // onLoad callback (Success)
+        function(gltf) {
+            console.log("SUCCESS: Spaceship model loaded!");
+            obstacleModel = gltf.scene;
+            obstacleModel.scale.set(9, 9, 9); // Adjust scale if needed
+            
+            obstacleModel.traverse(function(child) {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
+            });
+        },
+        
+        // onProgress callback (Loading...)
+        function(xhr) {
+            console.log("Loading Progress: " + (xhr.loaded / xhr.total * 100) + '%');
+        },
+        
+        // onError callback (The important part!)
+        function(error) {
+            console.error("FAILED TO LOAD MODEL. Details below:");
+            console.error(error);
+        }
+    );
+}
 
 // is Mobile
 var isMobile = false;
@@ -95,7 +140,7 @@ function init(event) {
     createLights();
     textureLoaders();
     createSpaceship();
-    // startPowerupLogic();
+loadObstacle();    // startPowerupLogic();
     // createDatGui();
     // createSettings();
 }
@@ -291,7 +336,7 @@ function moveSpaceship(e) {
 }
 
 function PowerUp() {
-    var object, objectDimension, objectGeometry, objectMaterial, xPosition, yPosition, zPosition, xPositionValues, yPositionValues, zPositionValues;
+    var object, objectDimension, xPosition, yPosition, zPosition, xPositionValues, yPositionValues, zPositionValues;
 
     objectDimension = 2;
 
@@ -303,20 +348,34 @@ function PowerUp() {
     yPosition = yPositionValues[getRandomInteger(0, yPositionValues.length - 1)];
     zPosition = zPositionValues[getRandomInteger(0, zPositionValues.length - 1)];
 
-    objectGeometry = new THREE.BoxGeometry(objectDimension, objectDimension, objectDimension, objectDimension);
-    objectMaterial = new THREE.MeshLambertMaterial({
-        color: 0x29B6F6,
-        shading: THREE.FlatShading
-    });
-    object = new THREE.Mesh(objectGeometry, cubeMaterial);
+    // --- MODIFIED SECTION START ---
+    if (obstacleModel) {
+        // Clone the loaded GLB model
+        object = obstacleModel.clone();
+        
+        // GLB models sometimes face the wrong way, uncomment to rotate 180 degrees if needed:
+        // object.rotation.y = Math.PI; 
+    } else {
+        // Fallback cube if model hasn't loaded yet
+        var objectGeometry = new THREE.BoxGeometry(objectDimension, objectDimension, objectDimension);
+        var objectMaterial = new THREE.MeshLambertMaterial({
+            color: 0xff0000, // Red color to indicate fallback
+            shading: THREE.FlatShading
+        });
+        console.log("Model not loaded yet, creating invisible placeholder");
+        object = new THREE.Mesh(objectGeometry, objectMaterial);
+    }
+    // --- MODIFIED SECTION END ---
+
     object.position.set(xPosition, yPosition, zPosition);
-    object.rotation.z = 45 * Math.PI / 180;
-    // console.log(object.position);
+    
+    // Note: We removed object.rotation.z = 45... because spaceships usually fly straight, not tilted like diamonds.
+    
     object.castShadow = true;
     object.receiveShadow = true;
 
     object.animate = function() {
-        object.rotation.y += 0.05;
+        // object.rotation.y += 0.05; // Commented out spinning to keep the ship straight
 
         if (object.position.z < PLANE_LENGTH / 2 + PLANE_LENGTH / 10) {
             object.position.z += 5;
@@ -326,7 +385,10 @@ function PowerUp() {
             }
             object.position.x = xPositionValues[getRandomInteger(0, xPositionValues.length - 1)];
             object.position.z = -PLANE_LENGTH / 2;
+            
+            // Ensure the object is visible again (including all children for GLB)
             object.visible = true;
+            object.traverse(function(child) { child.visible = true; });
         }
     }
 
@@ -475,21 +537,27 @@ function createScene() {
 
     scene = new THREE.Scene();
 
-    // Skybox
+    // Skybox - UPDATED for new Three.js
     var materialArray = [];
-    for (var i = 0; i < 6; i++)
+    for (var i = 0; i < 6; i++) {
         materialArray.push(new THREE.MeshBasicMaterial({
-            map: THREE.ImageUtils.loadTexture('assets/mp_bloodvalley/' + urls[i]),
+            // FIX 1: Use TextureLoader instead of ImageUtils
+            map: new THREE.TextureLoader().load('assets/mp_bloodvalley/' + urls[i]),
             side: THREE.BackSide
         }));
-    var skyGeometry = new THREE.CubeGeometry(5000, 5000, 5000);
-    var skyMaterial = new THREE.MeshFaceMaterial(materialArray);
-    skyBox = new THREE.Mesh(skyGeometry, skyMaterial);
+    }
+
+    // FIX 2: Rename CubeGeometry to BoxGeometry
+    var skyGeometry = new THREE.BoxGeometry(5000, 5000, 5000);
+    
+    // FIX 3: Pass the array directly (MeshFaceMaterial is deprecated)
+    skyBox = new THREE.Mesh(skyGeometry, materialArray);
+    
     skyBox.rotation.y = 3;
     skyBox.position.y = 300;
-
     scene.add(skyBox);
 
+    // Camera setup
     aspectRatio = WIDTH / HEIGHT;
     fieldOfView = 60;
     nearPlane = 1;
@@ -512,9 +580,10 @@ function createScene() {
     container = document.querySelector('#container');
     container.appendChild(renderer.domElement);
 
-
-    controls = new THREE.OrbitControls(camera);
-    // Dont let camera go below ground
+    // Controls
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enablePan = false;
+    controls.enableZoom = true; 
     controls.maxPolarAngle = Math.PI / 2 - 0.1;
     controls.minDistance = 50;
     controls.maxDistance = 100;
@@ -530,7 +599,7 @@ function createHelpers() {
     var gridHelper = new THREE.GridHelper(size, divisions);
     // scene.add(gridHelper);
 
-    var axisHelper = new THREE.AxisHelper(size / 2);
+    var axisHelper = new THREE.AxesHelper(size / 2);
     scene.add(axisHelper);
 }
 
@@ -641,7 +710,6 @@ function onWindowResize() {
 var collisionCounter = 0;
 
 function detectCollisions(objToCheck, objects) {
-    // console.log(spaceshipMesh);
     var origin = objToCheck.position.clone();
 
     var matrix = new THREE.Matrix4();
@@ -651,11 +719,28 @@ function detectCollisions(objToCheck, objects) {
     direction = direction.applyMatrix4(matrix);
 
     var ray = new THREE.Raycaster(origin, direction);
-    // console.log(ray);
-    var intersections = ray.intersectObjects(objects);
+    
+    // FIX: Create a temporary list of objects that DOES NOT include the current ship
+    // This prevents the ship from hitting its own geometry
+    var otherObjects = objects.filter(function(obj) {
+        return obj !== objToCheck;
+    });
+    
+    // Raycast against everything EXCEPT itself
+    var intersections = ray.intersectObjects(otherObjects, true); 
 
     if (intersections.length > 0 && intersections[0].distance <= 5) {
-        intersections[0].object.visible = false;
+        // Hide the whole group if hit
+        var hitObject = intersections[0].object;
+        
+        // Traverse up to find the main container (in case we hit a child mesh)
+        // This ensures the whole spaceship disappears, not just one wing
+        while(hitObject.parent && hitObject.parent.type !== 'Scene') {
+             hitObject = hitObject.parent;
+             if(objects.includes(hitObject)) break;
+        }
+        hitObject.visible = false;
+        
         return true;
     }
     return false;
@@ -837,12 +922,14 @@ function loop() {
         animationFrame = requestAnimationFrame(loop);
     }, 15);
 
-    if (texture.offset.y < 0) {
-        texture.offset.y = 1;
+    // --- FIX: Check if texture exists before using it ---
+    if (texture) {
+        if (texture.offset.y < 0) {
+            texture.offset.y = 1;
+        }
+        texture.offset.y -= 0.01;
     }
-    texture.offset.y -= 0.01;
-
-    // console.log(texture.offset);
+    // ---------------------------------------------------
 
     powerups.forEach(function(element, index) {
         powerups[index].animate();
